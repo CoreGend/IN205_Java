@@ -1,0 +1,5 @@
+compiler
+
+jar cvmf MANIFEST.MF PlusOuMoins.jar *.class
+
+java -jar PlusOuMoins.jar
