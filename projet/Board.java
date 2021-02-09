@@ -29,15 +29,15 @@ class Board{
 
     public void setNom(String nom){ this.nom = nom; }
 
-    public void setBoat(char colonne, int ligne){ this.boardShip[(colonne-'A') + (ligne-1)*this.taille] = 'A'; }
-    public void setHit(char colonne, int ligne){ this.boardHit[(colonne-'A') + (ligne-1)*this.taille] = true; }
+    public void setBoat(char colonne, int ligne){ boardShip[(colonne-'A') + (ligne-1)*taille] = 'A'; }
+    public void setHit(char colonne, int ligne){ boardHit[(colonne-'A') + (ligne-1)*taille] = true; }
 
     // la fonction est très moche actuellement, elle sera refaite plus proprement plus tard
     public void print(){
         String ligneCourante;
         // en-tête
         ligneCourante = "Navires :";
-        for(int i=0; i<(this.taille)*2+3-9 +3; i++){
+        for(int i=0; i<taille*2+3-9 +3; i++){
             ligneCourante = ligneCourante + ' ';
         }
         ligneCourante = ligneCourante + "Frappes :";
@@ -63,7 +63,7 @@ class Board{
                 ligneCourante = ligneCourante + ' ';
             }
             for(int j=0; j<taille; j++){
-                ligneCourante = ligneCourante + this.boardShip[i*taille + j] + ' ';
+                ligneCourante = ligneCourante + boardShip[i*taille + j] + ' ';
             }
 
             ligneCourante = ligneCourante + "   " + (i+1);
