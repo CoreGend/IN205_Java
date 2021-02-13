@@ -20,3 +20,10 @@ Exercice 2 :
 - L'orientation des navires étant un ensemble fini, on peut représenter cette information par le biais d'un
 enum
 - Pour remédier au problème du nombre de fichiers on peut passer par un jar
+
+Exercice 3 :
+- les indices de position des navires commencent dans le code à 0, mais l'utilisateur devra y accéder
+en commençant par 1, il faudra donc faire une translation lors des différents appels de fonction
+- si la valeur (position + longueur) d'un navire mène en dehors de la grille de jeu il y aura une erreur
+il faut donc lever une erreur et faire replacer le navire
+- si deux navires se chevauchent il faut interdire le placement du nouveau navire (levée d'erreur aussi)

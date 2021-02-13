@@ -1,3 +1,5 @@
+import java.net.http.WebSocket;
+
 class Board{
     private String nom;
     private int taille;
@@ -22,8 +24,8 @@ class Board{
     }
 
     // fonctions    
-    public String getNom(){ return nom; }
-    public int getTaille(){ return taille; }
+    public String getName(){ return nom; }
+    public int getSize(){ return taille; }
     public Character[] getBoardShip(){ return boardShip; }
     public boolean[] getBoardHit(){ return boardHit; }
 
@@ -32,8 +34,7 @@ class Board{
     public void setBoat(char colonne, int ligne){ boardShip[(colonne-'A') + (ligne-1)*taille] = 'A'; }
     public void setHit(char colonne, int ligne){ boardHit[(colonne-'A') + (ligne-1)*taille] = true; }
 
-    // la fonction est très moche actuellement, elle sera refaite plus proprement plus tard
-    public void print(){
+    private void print_en_tete(){
         String ligneCourante;
         // en-tête
         ligneCourante = "Navires :";
@@ -42,7 +43,10 @@ class Board{
         }
         ligneCourante = ligneCourante + "Frappes :";
         System.out.println(ligneCourante);
+    }
 
+    private void print_first_line(){
+        String ligneCourante;
         // première ligne
         ligneCourante = "   ";
         for(int i=0; i<taille; i++){
@@ -55,7 +59,10 @@ class Board{
             ligneCourante = ligneCourante + (char) ('A'+i) + ' ';
         }
         System.out.println(ligneCourante);
+    }
 
+    private void print_grid(){
+        String ligneCourante;
         // affichage grille
         for(int i=0; i<taille; i++){
             ligneCourante = ""+(i+1);
@@ -80,7 +87,78 @@ class Board{
             }
             System.out.println(ligneCourante);
         }
+    }
 
+    public void print(){
+        print_en_tete();
+        print_first_line();
+        print_grid();        
         System.out.println("");
     }
+
+    private void checkPlace(AbstractShip ship, int x, int y) throws NotEnoughSpace{
+        Orientation orientation = ship.getOrientation();
+        int len = ship.getTaille();
+
+        if( (orientation == Orientation.EAST && x > taille-len) 
+            || (orientation == Orientation.WEST && x < len)
+            || (orientation == Orientation.NORTH && y < len)
+            || (orientation == Orientation.SOUTH && y > taille-len) )
+            { throw new NotEnoughSpace("There is not enough space to place the boat"); }
+    }
+
+    private void checkBoat(AbstractShip ship, int x, int y) throws Intersect
+    {
+        Orientation orientation = ship.getOrientation();
+        int len = ship.getTaille();
+
+        for(int i=0; i<len; i++){
+            if(hasShip(x, y)) throw new Intersect("The boat intersects another boat");
+
+            if(orientation == Orientation.SOUTH) y+=1;
+            else if(orientation == Orientation.NORTH) y-=1;
+            else if(orientation == Orientation.EAST) x+=1;
+            else if(orientation == Orientation.WEST) x-=1;
+        }
+    }
+
+    public void putShip(AbstractShip ship, int x, int y) throws NotEnoughSpace, Intersect{
+        try{
+            checkPlace(ship, x, y);
+            checkBoat(ship, x, y);
+
+            Orientation orientation = ship.getOrientation();
+            int len = ship.getTaille();
+            for(int i=0; i<len; i++){
+                boardShip[x+taille*y] = ship.getLabel();
+        
+                if(orientation == Orientation.SOUTH) y+=1;
+                else if(orientation == Orientation.NORTH) y-=1;
+                else if(orientation == Orientation.EAST) x+=1;
+                else if(orientation == Orientation.WEST) x-=1;
+            }
+        }
+        catch(NotEnoughSpace e)
+        {   System.out.println("There is not enough space to place the boat");
+            throw new NotEnoughSpace("There is not enough space to place the boat");}
+        catch(Intersect e)
+        {   System.out.println("The boat intersects another boat"); 
+            throw new Intersect("The boat intersects another boat"); }
+    }
+    
+    private boolean hasShip(int x, int y){
+        if (boardShip[x+y*taille] != '.') return true;
+        return false;
+    }
+
+    public void setHit(boolean hit, int x, int y){
+        if(hit == true) boardHit[x+y*taille] = true;
+        else boardHit[x+y*taille] = false;
+    }
+
+    public Boolean getHit(int x, int y){
+        if (hasShip(x, y) == true) return true;
+        else return false; 
+    }
+
 }
