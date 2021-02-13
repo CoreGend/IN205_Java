@@ -98,7 +98,7 @@ class Board{
 
     private void checkPlace(AbstractShip ship, int x, int y) throws NotEnoughSpace{
         Orientation orientation = ship.getOrientation();
-        int len = ship.getTaille();
+        int len = ship.getLength();
 
         if( (orientation == Orientation.EAST && x > taille-len) 
             || (orientation == Orientation.WEST && x < len)
@@ -110,7 +110,7 @@ class Board{
     private void checkBoat(AbstractShip ship, int x, int y) throws Intersect
     {
         Orientation orientation = ship.getOrientation();
-        int len = ship.getTaille();
+        int len = ship.getLength();
 
         for(int i=0; i<len; i++){
             if(hasShip(x, y)) throw new Intersect("The boat intersects another boat");
@@ -128,7 +128,7 @@ class Board{
             checkBoat(ship, x, y);
 
             Orientation orientation = ship.getOrientation();
-            int len = ship.getTaille();
+            int len = ship.getLength();
             for(int i=0; i<len; i++){
                 boardShip[x+taille*y] = ship.getLabel();
         
