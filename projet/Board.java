@@ -3,8 +3,8 @@ import java.net.http.WebSocket;
 class Board{
     private String nom;
     private int taille;
-    private Character[] boardShip;
-    private boolean[] boardHit;
+    private ShipState[] boardShip;
+    private Boolean[] boardHit;
     
     // constructor
     public Board(String nom, int taille){
@@ -15,7 +15,7 @@ class Board{
 
         for(int i=0; i<taille*taille; i++)
         {
-            boardShip[i] = '.'; boardHit[i] = false;
+            boardShip[i] = '.'; boardHit[i] = null;
         }
     }
 
@@ -27,7 +27,7 @@ class Board{
     public String getName(){ return nom; }
     public int getSize(){ return taille; }
     public Character[] getBoardShip(){ return boardShip; }
-    public boolean[] getBoardHit(){ return boardHit; }
+    public Boolean[] getBoardHit(){ return boardHit; }
 
     public void setNom(String nom){ this.nom = nom; }
 
@@ -35,57 +35,59 @@ class Board{
     public void setHit(char colonne, int ligne){ boardHit[(colonne-'A') + (ligne-1)*taille] = true; }
 
     private void print_en_tete(){
-        String ligneCourante;
         // en-tête
-        ligneCourante = "Navires :";
+        System.out.print("Navires :");
         for(int i=0; i<taille*2+3-9 +3; i++){
-            ligneCourante = ligneCourante + ' ';
+            System.out.print(' ');
         }
-        ligneCourante = ligneCourante + "Frappes :";
-        System.out.println(ligneCourante);
+        System.out.print("Frappes :");
+        System.out.println("");
     }
 
     private void print_first_line(){
-        String ligneCourante;
         // première ligne
-        ligneCourante = "   ";
+        System.out.print("   ");
         for(int i=0; i<taille; i++){
-            ligneCourante = ligneCourante + (char) ('A'+i) + ' ';
+            System.out.print((char) ('A'+i) + ' ');
         }
         for(int i=0; i<6; i++){
-            ligneCourante = ligneCourante + ' ';
+            System.out.print(' ');
         }
         for(int i=0; i<taille; i++){
-            ligneCourante = ligneCourante + (char) ('A'+i) + ' ';
+            System.out.print((char) ('A'+i) + ' ');
         }
-        System.out.println(ligneCourante);
+        System.out.println("");
     }
 
     private void print_grid(){
         String ligneCourante;
         // affichage grille
         for(int i=0; i<taille; i++){
-            ligneCourante = ""+(i+1);
+            System.out.print(""+(i+1));
             for(int j=0; j < 2 - (i+1)/10; j++){
-                ligneCourante = ligneCourante + ' ';
+                System.out.print(' ');
             }
             for(int j=0; j<taille; j++){
-                ligneCourante = ligneCourante + boardShip[i*taille + j] + ' ';
+                System.out.print(boardShip[i*taille + j] + ' ', ColorUtil.Color.WHITE);
             }
 
-            ligneCourante = ligneCourante + "   " + (i+1);
+            System.out.print("   " + (i+1));
             for(int j=0; j < 2 - (i+1)/10; j++){
-                ligneCourante = ligneCourante + ' ';
+                System.out.print(' ');
             }            
             for(int j=0; j<taille; j++){
                 if(boardHit[i*taille + j] == true){
-                    ligneCourante = ligneCourante + "X ";
+                    System.out.print("X ", ColorUtil.Color.RED);
                 }
-                else{
-                    ligneCourante = ligneCourante + ". ";
+                else if(boardHit[i*taille + j] == false){
+                    System.out.print("X ", ColorUtil.Color.WHITE);
+                }
+                else
+                {
+                    System.out.print(". ", ColorUtil.Color.WHITE);
                 }
             }
-            System.out.println(ligneCourante);
+            System.out.println("");
         }
     }
 

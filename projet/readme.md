@@ -27,3 +27,7 @@ en commençant par 1, il faudra donc faire une translation lors des différents 
 - si la valeur (position + longueur) d'un navire mène en dehors de la grille de jeu il y aura une erreur
 il faut donc lever une erreur et faire replacer le navire
 - si deux navires se chevauchent il faut interdire le placement du nouveau navire (levée d'erreur aussi)
+
+Exercice 5 :
+- pour éviter gérer cet état illégal, nous faisons en sorte que addStrike appelle la méthode du navire
+uniquement si le booléen isStruck est à l'état faux
