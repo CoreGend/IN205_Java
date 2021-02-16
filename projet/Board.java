@@ -10,12 +10,13 @@ class Board{
     public Board(String nom, int taille){
         this.nom = nom;
         this.taille = taille;
-        this.boardShip = new Character[taille*taille];
-        this.boardHit  = new boolean[taille*taille];
+        this.boardShip = new ShipState[taille*taille];
+        this.boardHit  = new Boolean[taille*taille];
 
         for(int i=0; i<taille*taille; i++)
         {
-            boardShip[i] = '.'; boardHit[i] = null;
+            boardShip[i] = new ShipState(null);
+            boardHit[i] = null;
         }
     }
 
@@ -26,13 +27,10 @@ class Board{
     // fonctions    
     public String getName(){ return nom; }
     public int getSize(){ return taille; }
-    public Character[] getBoardShip(){ return boardShip; }
+    public ShipState[] getBoardShip(){ return boardShip; }
     public Boolean[] getBoardHit(){ return boardHit; }
 
     public void setNom(String nom){ this.nom = nom; }
-
-    public void setBoat(char colonne, int ligne){ boardShip[(colonne-'A') + (ligne-1)*taille] = 'A'; }
-    public void setHit(char colonne, int ligne){ boardHit[(colonne-'A') + (ligne-1)*taille] = true; }
 
     private void print_en_tete(){
         // en-tête
@@ -48,19 +46,20 @@ class Board{
         // première ligne
         System.out.print("   ");
         for(int i=0; i<taille; i++){
-            System.out.print((char) ('A'+i) + ' ');
+            System.out.print((char) ('A'+i));
+            System.out.print(' ');
         }
         for(int i=0; i<6; i++){
             System.out.print(' ');
         }
         for(int i=0; i<taille; i++){
-            System.out.print((char) ('A'+i) + ' ');
+            System.out.print((char) ('A'+i));
+            System.out.print(' ');
         }
         System.out.println("");
     }
 
     private void print_grid(){
-        String ligneCourante;
         // affichage grille
         for(int i=0; i<taille; i++){
             System.out.print(""+(i+1));
@@ -68,7 +67,7 @@ class Board{
                 System.out.print(' ');
             }
             for(int j=0; j<taille; j++){
-                System.out.print(boardShip[i*taille + j] + ' ', ColorUtil.Color.WHITE);
+                System.out.print(boardShip[i*taille + j].toString() + ' ');
             }
 
             System.out.print("   " + (i+1));
@@ -76,15 +75,13 @@ class Board{
                 System.out.print(' ');
             }            
             for(int j=0; j<taille; j++){
-                if(boardHit[i*taille + j] == true){
-                    System.out.print("X ", ColorUtil.Color.RED);
+                if(boardHit[i*taille + j] == null)
+                { System.out.print(". ");}
+                else if(boardHit[i*taille + j] == true){
+                    System.out.print(ColorUtil.colorize("X ", ColorUtil.Color.RED));
                 }
                 else if(boardHit[i*taille + j] == false){
-                    System.out.print("X ", ColorUtil.Color.WHITE);
-                }
-                else
-                {
-                    System.out.print(". ", ColorUtil.Color.WHITE);
+                    System.out.print("X ");
                 }
             }
             System.out.println("");
@@ -132,7 +129,7 @@ class Board{
             Orientation orientation = ship.getOrientation();
             int len = ship.getLength();
             for(int i=0; i<len; i++){
-                boardShip[x+taille*y] = ship.getLabel();
+                boardShip[x+taille*y] = new ShipState(ship);
         
                 if(orientation == Orientation.SOUTH) y+=1;
                 else if(orientation == Orientation.NORTH) y-=1;
@@ -149,7 +146,7 @@ class Board{
     }
     
     private boolean hasShip(int x, int y){
-        if (boardShip[x+y*taille] != '.') return true;
+        if (boardShip[x+y*taille].getShip() != null) return true;
         return false;
     }
 
@@ -159,8 +156,36 @@ class Board{
     }
 
     public Boolean getHit(int x, int y){
-        if (hasShip(x, y) == true) return true;
+        if (hasShip(x, y) == true) 
+        {
+            boardShip[x+y*taille].addStrike();
+            return true;
+        }
         else return false; 
     }
 
+    Hit sendHit(int x, int y)
+    {
+        boolean hit = getHit(x, y);
+        if(hit == true)
+        {
+            boolean dead = boardShip[x+y*taille].getShip().isSunk();
+            if(dead == true){
+                switch(boardShip[x+y*taille].getShip().getLabel())
+                {
+                    case 'C':
+                        return Hit.CARRIER;
+                    case 'S':
+                        return Hit.SUBMARINE;
+                    case 'B':
+                        return Hit.BATTLESHIP;
+                    case 'D':
+                        return Hit.DESTROYER;
+                }
+            } 
+            else return Hit.STRIKE;
+        }
+        
+        return Hit.MISS;
+    }
 }

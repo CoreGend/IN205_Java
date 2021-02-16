@@ -11,7 +11,7 @@ class ShipState
     }
     public ShipState(AbstractShip ship)
     {
-        ShipState(ship, false);
+        this(ship, false);
     }
 
     public void addStrike()
@@ -28,13 +28,13 @@ class ShipState
 
     public String toString()
     {
-        if(struck == true)
-        {
-            return ColorUtil.colorize("X ", ColorUtil.Color.RED);
-        }
+        if(ship == null){ return ".";}
         else
         {
-            return "X ";
+            if(struck == true)
+            { return ColorUtil.colorize(ship.getLabel(), ColorUtil.Color.RED); }
+            else
+            { return String.valueOf(ship.getLabel()); }
         }
     }
 

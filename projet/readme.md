@@ -31,3 +31,7 @@ il faut donc lever une erreur et faire replacer le navire
 Exercice 5 :
 - pour éviter gérer cet état illégal, nous faisons en sorte que addStrike appelle la méthode du navire
 uniquement si le booléen isStruck est à l'état faux
+
+Question 6 :
+- si on appelle sendHit deux fois sur la même position d'un navire, un message sera généré et le joueur devra indiquer une place légale
+- hasShip(x,y) renvoie true lorsque le navire en (x,y) a été coulé. cependant, puisque nous ne pouvons pas taper 2 fois au même endroit cela ne pose pas de soucis.

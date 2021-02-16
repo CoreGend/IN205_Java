@@ -14,6 +14,7 @@ class TestBoard{
         Submarine sub = new Submarine(Orientation.NORTH);
         Destroyer destro = new Destroyer();
 
+
         try{ boardTest2.putShip(destro, 2, 3); }
         catch(Exception e){}
 
@@ -23,6 +24,21 @@ class TestBoard{
         try{ boardTest2.putShip(sub, 6, 6); }
         catch(Exception e){}
 
-       boardTest2.print();
+        try{ boardTest2.putShip(car, 1, 5); }
+        catch(Exception e){}
+
+        Hit test = boardTest2.sendHit(1, 5);
+        System.out.print(test.toString());
+        System.out.println("");
+        test = boardTest2.sendHit(2, 3);
+        System.out.print(test.toString());
+        System.out.println("");
+        test = boardTest2.sendHit(3, 3);
+        System.out.print(test.toString());
+        System.out.println("");
+        test = boardTest2.sendHit(0, 0);
+        System.out.print(test.toString());
+        System.out.println("");
+        boardTest2.print();
     }
 }
