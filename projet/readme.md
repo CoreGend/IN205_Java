@@ -1,6 +1,6 @@
 COMPILER:
 	javac -d . *.java
-	java -jar BatNav.jar
+	java ensta.TestGame
 
 Question 1 :
 - j'ai décidé de rajouter un attribut taille afin de pouvoir y accéder facilement lors de l'affichage
