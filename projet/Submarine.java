@@ -1,4 +1,6 @@
-class Submarine extends AbstractShip
+package ensta;
+
+public class Submarine extends AbstractShip
 {
     public Submarine(Orientation orientation)
     {

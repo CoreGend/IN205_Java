@@ -1,9 +1,11 @@
-abstract class AbstractShip
+package ensta;
+
+abstract public class AbstractShip
 {
     private Character label;
     private String name;
     private int length;
-    private Orientation orientation;
+    public Orientation orientation;
     private int strikeCount;
 
     public AbstractShip(String name, Character label, int length, Orientation orientation)

@@ -1,3 +1,5 @@
+package ensta;
+
 public class NotEnoughSpace extends Exception{
     public NotEnoughSpace(){
         super();

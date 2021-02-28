@@ -1,6 +1,8 @@
+package ensta;
+
 import java.net.http.WebSocket;
 
-class Board{
+public class Board implements IBoard{
     private String nom;
     private int taille;
     private ShipState[] boardShip;
@@ -31,6 +33,159 @@ class Board{
     public Boolean[] getBoardHit(){ return boardHit; }
 
     public void setNom(String nom){ this.nom = nom; }
+
+    public void print(){
+        print_en_tete();
+        print_first_line();
+        print_grid();        
+        System.out.println("");
+    }
+
+    /**
+     * Après avoir vérifié que le bateau peut être placé, le place
+     * @param ship
+     * @param x
+     * @param y
+     * @throws NotEnoughSpace
+     * @throws Intersect
+     */
+    public void putShip(AbstractShip ship, int x, int y) throws NotEnoughSpace, Intersect{
+        try{
+            checkPlace(ship, x, y);
+            checkBoat(ship, x, y);
+
+            Orientation orientation = ship.getOrientation();
+            int len = ship.getLength();
+            for(int i=0; i<len; i++){
+                boardShip[x+taille*y] = new ShipState(ship);
+        
+                if(orientation == Orientation.SOUTH) y+=1;
+                else if(orientation == Orientation.NORTH) y-=1;
+                else if(orientation == Orientation.EAST) x+=1;
+                else if(orientation == Orientation.WEST) x-=1;
+            }
+        }
+        catch(NotEnoughSpace e)
+        {   System.out.println("There is not enough space to place the boat");
+            throw new NotEnoughSpace("There is not enough space to place the boat");}
+        catch(Intersect e)
+        {   System.out.println("The boat intersects another boat"); 
+            throw new Intersect("The boat intersects another boat"); }
+    }
+    
+    /**
+     * Vérifie si l'emplacement (x,y) est pourvu d'un bateau
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean hasShip(int x, int y){
+        if (boardShip[x+y*taille].getShip() != null) return true;
+        return false;
+    }
+
+    /**
+     * place l'état d'un tir à la position donnée
+     * @param hit
+     * @param x
+     * @param y
+     */
+    public void setHit(boolean hit, int x, int y){
+        boardHit[x+y*taille] = hit;
+    }
+
+    /**
+     * Vérifie l'état d'un tir à la position donnée
+     * @param x
+     * @param y
+     * @return
+     */
+    public Boolean getHit(int x, int y){ 
+        return boardHit[x+y*taille];
+    }
+
+    /**
+     * Envoie un tir à la position donnée 
+     * @param x
+     * @param y
+     * @return
+     */
+    public Hit sendHit(int x, int y)
+    {
+        Boolean hit = getHit(x, y);
+        if(hit==null)
+        {
+            if(hasShip(x,y) == true)
+            {
+                boardShip[x+y*taille].addStrike();
+
+                boolean dead = boardShip[x+y*taille].getShip().isSunk();
+                if(dead == true){
+                    System.out.println(boardShip[x+y*taille].getShip().getLabel() + " coulé");
+                    switch(boardShip[x+y*taille].getShip().getLabel())
+                    {
+                        case 'C':
+                            return Hit.CARRIER;
+                        case 'S':
+                            return Hit.SUBMARINE;
+                        case 'B':
+                            return Hit.BATTLESHIP;
+                        case 'D':
+                            return Hit.DESTROYER;
+                    }
+                } 
+                else return Hit.STRIKE;
+            }
+        }
+        return Hit.MISS;
+    }
+
+    /**
+     * PRIVATE METHODS
+     */
+
+         /**
+     * Vérifie qu'il y a bien la place pour placer un bateau
+     * @param ship
+     * @param x
+     * @param y
+     * @throws NotEnoughSpace
+     */
+    private void checkPlace(AbstractShip ship, int x, int y) throws NotEnoughSpace{
+        Orientation orientation = ship.getOrientation();
+        int len = ship.getLength();
+
+        if( (orientation == Orientation.EAST && x > taille-len) 
+            || (orientation == Orientation.WEST && x+1-len < 0)
+            || (orientation == Orientation.NORTH && y+1-len < 0)
+            || (orientation == Orientation.SOUTH && y > taille-len) )
+            { 
+                System.out.println("Longueur : " + len + " Emplacement : " + y);
+                throw new NotEnoughSpace("There is not enough space to place the boat"); 
+        }
+    }
+
+    /**
+     * Vérifie que le bateau n'intersecte pas un autre bateau
+     * @param ship
+     * @param x
+     * @param y
+     * @throws Intersect
+     */
+    private void checkBoat(AbstractShip ship, int x, int y) throws Intersect
+    {
+        Orientation orientation = ship.getOrientation();
+        int len = ship.getLength();
+
+        for(int i=0; i<len; i++){
+            if(hasShip(x, y)) throw new Intersect("The boat intersects another boat");
+
+            if(orientation == Orientation.SOUTH) y+=1;
+            else if(orientation == Orientation.NORTH) y-=1;
+            else if(orientation == Orientation.EAST) x+=1;
+            else if(orientation == Orientation.WEST) x-=1;
+        }
+    }
 
     private void print_en_tete(){
         // en-tête
@@ -86,106 +241,5 @@ class Board{
             }
             System.out.println("");
         }
-    }
-
-    public void print(){
-        print_en_tete();
-        print_first_line();
-        print_grid();        
-        System.out.println("");
-    }
-
-    private void checkPlace(AbstractShip ship, int x, int y) throws NotEnoughSpace{
-        Orientation orientation = ship.getOrientation();
-        int len = ship.getLength();
-
-        if( (orientation == Orientation.EAST && x > taille-len) 
-            || (orientation == Orientation.WEST && x < len)
-            || (orientation == Orientation.NORTH && y < len)
-            || (orientation == Orientation.SOUTH && y > taille-len) )
-            { throw new NotEnoughSpace("There is not enough space to place the boat"); }
-    }
-
-    private void checkBoat(AbstractShip ship, int x, int y) throws Intersect
-    {
-        Orientation orientation = ship.getOrientation();
-        int len = ship.getLength();
-
-        for(int i=0; i<len; i++){
-            if(hasShip(x, y)) throw new Intersect("The boat intersects another boat");
-
-            if(orientation == Orientation.SOUTH) y+=1;
-            else if(orientation == Orientation.NORTH) y-=1;
-            else if(orientation == Orientation.EAST) x+=1;
-            else if(orientation == Orientation.WEST) x-=1;
-        }
-    }
-
-    public void putShip(AbstractShip ship, int x, int y) throws NotEnoughSpace, Intersect{
-        try{
-            checkPlace(ship, x, y);
-            checkBoat(ship, x, y);
-
-            Orientation orientation = ship.getOrientation();
-            int len = ship.getLength();
-            for(int i=0; i<len; i++){
-                boardShip[x+taille*y] = new ShipState(ship);
-        
-                if(orientation == Orientation.SOUTH) y+=1;
-                else if(orientation == Orientation.NORTH) y-=1;
-                else if(orientation == Orientation.EAST) x+=1;
-                else if(orientation == Orientation.WEST) x-=1;
-            }
-        }
-        catch(NotEnoughSpace e)
-        {   System.out.println("There is not enough space to place the boat");
-            throw new NotEnoughSpace("There is not enough space to place the boat");}
-        catch(Intersect e)
-        {   System.out.println("The boat intersects another boat"); 
-            throw new Intersect("The boat intersects another boat"); }
-    }
-    
-    private boolean hasShip(int x, int y){
-        if (boardShip[x+y*taille].getShip() != null) return true;
-        return false;
-    }
-
-    public void setHit(boolean hit, int x, int y){
-        if(hit == true) boardHit[x+y*taille] = true;
-        else boardHit[x+y*taille] = false;
-    }
-
-    public Boolean getHit(int x, int y){
-        if (hasShip(x, y) == true) 
-        {
-            boardShip[x+y*taille].addStrike();
-            return true;
-        }
-        else return false; 
-    }
-
-    Hit sendHit(int x, int y)
-    {
-        boolean hit = getHit(x, y);
-        if(hit == true)
-        {
-            boolean dead = boardShip[x+y*taille].getShip().isSunk();
-            if(dead == true){
-                switch(boardShip[x+y*taille].getShip().getLabel())
-                {
-                    case 'C':
-                        return Hit.CARRIER;
-                    case 'S':
-                        return Hit.SUBMARINE;
-                    case 'B':
-                        return Hit.BATTLESHIP;
-                    case 'D':
-                        return Hit.DESTROYER;
-                }
-            } 
-            else return Hit.STRIKE;
-        }
-        
-        return Hit.MISS;
     }
 }

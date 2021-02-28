@@ -1,4 +1,8 @@
-class TestBoard{
+package ensta;
+
+import java.util.*;
+
+public class TestBoard{
     public static void main(String[] args) throws NotEnoughSpace, Intersect{
         Board boardTest2 = new Board("Michel");
 
@@ -40,5 +44,9 @@ class TestBoard{
         System.out.print(test.toString());
         System.out.println("");
         boardTest2.print();
+
+        Random rnd = new Random();
+        int res = rnd.nextInt(10);
+        System.out.println(res);
     }
 }

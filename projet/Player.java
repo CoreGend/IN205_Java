@@ -1,3 +1,5 @@
+package ensta;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -64,16 +66,16 @@ public class Player {
     }
 
     public Hit sendHit(int[] coords) {
-        boolean done;
+        boolean done = false;
         Hit hit = null;
 
         do {
             System.out.println("où frapper?");
             InputHelper.CoordInput hitInput = InputHelper.readCoordInput();
-            
+
             // TODO call sendHit on this.opponentBoard
-            if(this.board.getBoardHit()[hitInput.x0+taille*hitInput.y] != null)
-            { print("La case a déjà été frappée"); }
+            if(this.board.getBoardHit()[hitInput.x+this.board.getSize()*hitInput.y] != null)
+            { System.out.print("La case a déjà été frappée"); }
             else{
                 hit = this.opponentBoard.sendHit(hitInput.x, hitInput.y);
 
@@ -81,7 +83,6 @@ public class Player {
             // return hit is obvious. But how to return coords at the same time ?
             
             // coords est un tableau, on lui met dedans les coordonnees de hitInput
-                coords = new int[2];
                 coords[0] = hitInput.x; coords[1] = hitInput.y;
                 done = true;
             }

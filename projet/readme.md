@@ -1,5 +1,5 @@
 COMPILER:
-	jar cvmf MANIFEST.MF BatNav.jar *.class
+	javac -d . *.java
 	java -jar BatNav.jar
 
 Question 1 :
@@ -10,7 +10,7 @@ de la grille (celle-ci entre en compte pour itérer sur le tableau)
 - le code de print n'est pas encore très bon mais je vais le diviser en plus petites fonctions plus spécifiques
 
 - puisque pour l'instant il n'est pas prévu de créer des classes filles à Board, j'ai tout mis en private pour
-bien contrôler les élémenst que nous pouvons changer dans la classe
+bien contrôler les éléments que nous pouvons changer dans la classe
 	=> on peut tout obtenir
 	=> on ne peut modifier que le nom
 
@@ -34,4 +34,4 @@ uniquement si le booléen isStruck est à l'état faux
 
 Question 6 :
 - si on appelle sendHit deux fois sur la même position d'un navire, un message sera généré et le joueur devra indiquer une place légale
-- hasShip(x,y) renvoie true lorsque le navire en (x,y) a été coulé. cependant, puisque nous ne pouvons pas taper 2 fois au même endroit cela ne pose pas de soucis.
+- hasShip(x,y) renvoie true lorsque le navire en (x,y) a été coulé. Cependant, puisque nous ne pouvons pas taper 2 fois au même endroit cela ne pose pas de soucis.

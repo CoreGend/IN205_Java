@@ -1,6 +1,8 @@
+package ensta;
+
 import javax.print.attribute.standard.OrientationRequested;
 
-class Destroyer extends AbstractShip
+public class Destroyer extends AbstractShip
 {
     public Destroyer(Orientation orientation)
     {

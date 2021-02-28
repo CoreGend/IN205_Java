@@ -1,13 +1,17 @@
+package ensta;
+
+
 import javax.lang.model.util.ElementScanner6;
 
-class ShipState
+public class ShipState
 {
     private AbstractShip ship;
     private boolean struck;
+    private int strikeCount;
 
     public ShipState(AbstractShip ship, boolean struck)
     {
-        this.ship = ship; this.struck = struck;
+        this.ship = ship; this.struck = struck; strikeCount = 0;
     }
     public ShipState(AbstractShip ship)
     {
